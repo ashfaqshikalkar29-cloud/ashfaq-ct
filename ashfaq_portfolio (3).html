@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ashfaq Shikalkar — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #7c6cfa;
+    --accent2: #fa6c9a;
+    --accent3: #6cfabc;
+    --text: #e8e8f0;
+    --muted: #888899;
+    --cube-y: #f5c518;
+    --cube-o: #f97316;
+    --cube-b: #3b82f6;
+    --cube-r: #ef4444;
+    --cube-g: #22c55e;
+    --cube-w: #f0f0f0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  #cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  #cursor-ring {
+    position: fixed; width: 32px; height: 32px;
+    border: 1px solid rgba(124,108,250,0.5); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+  }
+
+  /* Scanline noise overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none; z-index: 100;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    padding: 1.2rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s;
+    background: rgba(10,10,15,0.0);
+    backdrop-filter: blur(0px);
+  }
+  nav.scrolled {
+    border-bottom-color: var(--border);
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 0 4rem;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.3;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  h1.hero-name {
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  h1.hero-name .accent { color: var(--accent); }
+  h1.hero-name .accent2 { color: var(--accent2); }
+
+  .hero-title {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(0.75rem, 1.5vw, 1rem);
+    color: var(--muted);
+    margin-top: 2rem;
+    max-width: 500px;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-tags {
+    display: flex; flex-wrap: wrap; gap: 0.75rem;
+    margin-top: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .tag:hover { border-color: var(--accent); color: var(--accent); }
+  .tag.active { border-color: var(--accent); color: var(--accent); background: rgba(124,108,250,0.08); }
+
+  .hero-cta {
+    display: flex; gap: 1.5rem; margin-top: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid var(--accent);
+  }
+  .btn-primary:hover { background: transparent; color: var(--accent); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+
+  /* Floating cube decoration */
+  .hero-cube {
+    position: absolute; right: 6rem; top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    animation: fadeIn 1.2s 1.2s forwards, float 6s 2s ease-in-out infinite;
+  }
+
+  /* SECTION COMMON */
+  section { padding: 7rem 4rem; }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1; max-width: 4rem;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+  h2.section-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  /* ABOUT */
+  #about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+  .about-text p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 2;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .about-text p strong { color: var(--text); font-weight: 700; }
+
+  .stat-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  }
+  .stat-card {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s;
+  }
+  .stat-card:hover { border-color: var(--accent); }
+  .stat-card:hover::before { transform: scaleY(1); }
+  .stat-num {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* PROJECTS */
+  #projects { border-top: 1px solid var(--border); }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+  }
+  .project-card {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 2rem;
+    position: relative; overflow: hidden;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .project-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(124,108,250,0.05) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .project-card:hover { border-color: rgba(124,108,250,0.4); transform: translateY(-4px); }
+  .project-card:hover::after { opacity: 1; }
+
+  .project-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+  }
+  .project-icon { margin-bottom: 1.5rem; }
+  .project-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+  .project-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.9;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .project-tech {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .tech-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  .project-highlight {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent3);
+    letter-spacing: 0.05em;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+    margin-top: auto;
+  }
+
+  /* CUBE VISUALIZER */
+  .cube-face-mini {
+    display: inline-block;
+    width: 42px; height: 42px;
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5px;
+  }
+  .cube-face-mini.five { width: 52px; height: 52px; grid-template-columns: repeat(5,1fr); }
+  .sticker { border-radius: 1px; }
+
+  /* SKILLS */
+  #skills { border-top: 1px solid var(--border); }
+  .skills-layout {
+    display: grid; grid-template-columns: 1fr 1.5fr; gap: 5rem;
+    align-items: start; margin-top: 3.5rem;
+  }
+  .skill-group { margin-bottom: 2.5rem; }
+  .skill-group-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    opacity: 0.7;
+  }
+  .skill-item {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+  .skill-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text);
+    min-width: 100px;
+    letter-spacing: 0.05em;
+  }
+  .skill-bar {
+    flex: 1; height: 2px;
+    background: var(--border);
+    position: relative; overflow: hidden;
+  }
+  .skill-fill {
+    height: 100%;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .skill-fill.accent2 { background: var(--accent2); }
+  .skill-fill.accent3 { background: var(--accent3); }
+  .skill-bar.animated .skill-fill { transform: scaleX(1); }
+  .skill-pct {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    min-width: 2.5rem;
+    text-align: right;
+  }
+
+  /* timeline */
+  .timeline { position: relative; padding-left: 1.5rem; }
+  .timeline::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+  .timeline-item {
+    position: relative; padding-bottom: 2rem;
+    padding-left: 1.5rem;
+  }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -1.5rem; top: 0.4rem;
+    width: 7px; height: 7px;
+    border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,108,250,0.2);
+  }
+  .timeline-year {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+    opacity: 0.7;
+  }
+  .timeline-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+  .timeline-body {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* CONTACT */
+  #contact { border-top: 1px solid var(--border); text-align: center; }
+  .contact-inner { max-width: 600px; margin: 0 auto; }
+  .contact-big {
+    font-size: clamp(2.5rem, 6vw, 5.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 2rem;
+  }
+  .contact-big .glow { color: var(--accent); }
+  .contact-links {
+    display: flex; justify-content: center; gap: 2rem;
+    flex-wrap: wrap; margin-top: 3rem;
+  }
+  .contact-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .contact-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* FOOTER */
+  footer {
+    padding: 2.5rem 4rem;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  footer span {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(-50%) rotate(0deg); }
+    33% { transform: translateY(calc(-50% - 14px)) rotate(2deg); }
+    66% { transform: translateY(calc(-50% + 8px)) rotate(-1deg); }
+  }
+  @keyframes spin {
+    from { transform: rotateY(0deg) rotateX(10deg); }
+    to   { transform: rotateY(360deg) rotateX(10deg); }
+  }
+  @keyframes glitch {
+    0%, 100% { clip-path: inset(0 0 95% 0); transform: translate(0); }
+    20% { clip-path: inset(30% 0 50% 0); transform: translate(-3px, 1px); }
+    40% { clip-path: inset(70% 0 5% 0); transform: translate(3px, -1px); }
+    60% { clip-path: inset(10% 0 80% 0); transform: translate(-2px, 0); }
+    80% { clip-path: inset(55% 0 25% 0); transform: translate(2px, 1px); }
+  }
+
+  /* Glitch text effect */
+  .glitch {
+    position: relative;
+    display: inline-block;
+  }
+  .glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    font-size: inherit; font-weight: inherit;
+    letter-spacing: inherit;
+  }
+  .glitch::before {
+    color: var(--accent2);
+    animation: glitch 4s 2s infinite;
+  }
+  .glitch::after {
+    color: var(--accent3);
+    animation: glitch 4s 2.2s infinite reverse;
+  }
+
+  /* Intersection observer fade */
+  .fade-in {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* Rubik's cube SVG 3D */
+  .cube-3d {
+    width: 180px; height: 180px;
+    transform-style: preserve-3d;
+    perspective: 600px;
+  }
+  .cube-svg-wrap {
+    animation: cubeRotate 12s linear infinite;
+  }
+  @keyframes cubeRotate {
+    from { transform: rotateY(0deg) rotateX(15deg); }
+    to   { transform: rotateY(360deg) rotateX(15deg); }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    section, #about, #hero { padding: 5rem 1.5rem; }
+    #about { grid-template-columns: 1fr; gap: 3rem; }
+    .skills-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .hero-cube { display: none; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo">Ashfaq Shikalkar</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+
+  <p class="hero-eyebrow">// Academic Portfolio — MIT Academy of Engineering, Pune</p>
+
+  <h1 class="hero-name">
+    <span class="glitch" data-text="Ashfaq">Ashfaq</span><br>
+    <span class="accent2">Shikalkar</span>
+  </h1>
+
+  <p class="hero-title">
+    First Year Engineering Student — PRN: 202501120043<br>
+    Department of Computer Engineering<br>
+    MIT Academy of Engineering, Alandi, Pune<br>
+    Academic Year 2025–26
+  </p>
+
+  <div class="hero-tags">
+    <span class="tag active">Python</span>
+    <span class="tag">Algorithms</span>
+    <span class="tag">Digital Logic</span>
+    <span class="tag">Minecraft CBs</span>
+    <span class="tag">Speedcubing</span>
+  </div>
+
+  <div class="hero-cta">
+    <a href="#projects" class="btn btn-primary">View Projects</a>
+    <a href="#contact" class="btn btn-ghost">Contact Details</a>
+  </div>
+
+  <!-- Floating 3D cube -->
+  <div class="hero-cube">
+    <svg width="200" height="220" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Isometric Rubik's Cube -->
+      <!-- Top face (yellow) -->
+      <g opacity="0.95">
+        <polygon points="100,10 160,45 100,80 40,45" fill="#f5c518" stroke="#0a0a0f" stroke-width="1.5"/>
+        <!-- top grid lines -->
+        <line x1="80,28" y1="28" x2="140,63" y2="63" stroke="#0a0a0f" stroke-width="0.8" opacity="0.5"/>
+        <line x1="60,45" y1="45" x2="120,10" y2="10" stroke="#0a0a0f" stroke-width="0.8" opacity="0.5"/>
+        <line x1="120,10" y1="10" x2="180,45" y2="45" stroke="#0a0a0f" stroke-width="0.8" opacity="0.3"/>
+        <polyline points="80,28 140,63" stroke="#0a0a0f" stroke-width="0.8" opacity="0.5" fill="none"/>
+        <polyline points="120,28 60,63" stroke="#0a0a0f" stroke-width="0.8" opacity="0.5" fill="none"/>
+        <!-- stickers top -->
+        <polygon points="100,15 122,27 100,39 78,27" fill="#f5c518" stroke="#0a0a0f" stroke-width="0.5"/>
+        <polygon points="122,27 144,39 122,51 100,39" fill="#f5c518" stroke="#0a0a0f" stroke-width="0.5"/>
+        <polygon points="78,27 100,39 78,51 56,39" fill="#f5c518" stroke="#0a0a0f" stroke-width="0.5"/>
+        <polygon points="100,39 122,51 100,63 78,51" fill="#f5c518" stroke="#0a0a0f" stroke-width="0.5"/>
+        <polygon points="56,39 78,51 56,63 34,51" fill="#f5c518" stroke="#0a0a0f" stroke-width="0.5" opacity="0"/>
+        <polygon points="144,39 166,51 144,63 122,51" fill="#f5c518" stroke="#0a0a0f" stroke-width="0.5" opacity="0"/>
+      </g>
+      <!-- Left face (blue) -->
+      <g>
+        <polygon points="40,45 100,80 100,150 40,115" fill="#3b82f6" stroke="#0a0a0f" stroke-width="1.5"/>
+        <line x1="40" y1="68" x2="100" y2="103" stroke="#0a0a0f" stroke-width="0.8" opacity="0.4"/>
+        <line x1="40" y1="92" x2="100" y2="127" stroke="#0a0a0f" stroke-width="0.8" opacity="0.4"/>
+        <line x1="60" y1="57" x2="60" y2="127" stroke="#0a0a0f" stroke-width="0.8" opacity="0.4"/>
+        <line x1="80" y1="69" x2="80" y2="139" stroke="#0a0a0f" stroke-width="0.8" opacity="0.4"/>
+      </g>
+      <!-- Right face (red) -->
+      <g>
+        <polygon points="100,80 160,45 160,115 100,150" fill="#ef4444" stroke="#0a0a0f" stroke-width="1.5"/>
+        <line x1="100" y1="103" x2="160" y2="68" stroke="#0a0a0f" stroke-width="0.8" opacity="0.4"/>
+        <line x1="100" y1="127" x2="160" y2="92" stroke="#0a0a0f" stroke-width="0.8" opacity="0.4"/>
+        <line x1="120" y1="69" x2="120" y2="139" stroke="#0a0a0f" stroke-width="0.8" opacity="0.4"/>
+        <line x1="140" y1="57" x2="140" y2="127" stroke="#0a0a0f" stroke-width="0.8" opacity="0.4"/>
+      </g>
+      <!-- Shadow -->
+      <ellipse cx="100" cy="175" rx="65" ry="12" fill="rgba(0,0,0,0.35)" />
+    </svg>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-text fade-in">
+    <p class="section-label">01 — About</p>
+    <h2 class="section-title">Student<br><span style="color:var(--accent)">Profile</span></h2>
+    <p style="margin-top:2rem">
+      I am Ashfaq Shikalkar, a first-year Computer Engineering student at
+      MIT Academy of Engineering, Alandi, Pune (PRN: 202501120043).
+      This portfolio documents the independent technical projects I have
+      developed alongside my academic curriculum.
+    </p>
+    <p>
+      My work spans algorithmic problem-solving in Python, combinational
+      digital logic on physical hardware, and creative system-building
+      within Minecraft Bedrock using command blocks — each project
+      reflecting a methodical, <strong>ground-up understanding</strong>
+      of the underlying concepts.
+    </p>
+    <p>
+      As a competitive speedcuber, my interest in the Rubik's Cube naturally
+      extended into coding full simulators and auto-solvers for both
+      <strong>3×3×3 and 5×5×5 cubes</strong>, and subsequently into
+      replicating all projects within a constrained, command-block environment.
+    </p>
+  </div>
+
+  <div class="stat-grid fade-in">
+    <div class="stat-card">
+      <div class="stat-num">3×3</div>
+      <div class="stat-label">Speedcuber — full solver in Python</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">5×5</div>
+      <div class="stat-label">Rubik's cube simulator + auto-solver</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">4-bit</div>
+      <div class="stat-label">Combinational lock on breadboard</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">MC</div>
+      <div class="stat-label">Minecraft command-block recreations</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <p class="section-label fade-in">02 — Projects</p>
+  <h2 class="section-title fade-in">Technical<br><span style="color:var(--accent2)">Projects</span></h2>
+
+  <div class="projects-grid">
+
+    <!-- Project 1: 3x3 Cube -->
+    <div class="project-card fade-in">
+      <div class="project-num">// PROJECT_01</div>
+      <div class="project-icon">
+        <!-- Mini 3x3 cube faces -->
+        <svg width="120" height="32" viewBox="0 0 120 32">
+          <!-- top row stickers (yellow face) -->
+          <rect x="0"  y="0" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="10" y="0" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="20" y="0" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="0"  y="10" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="10" y="10" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="20" y="10" width="9" height="9" rx="1" fill="#ef4444"/>
+          <rect x="0"  y="20" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="10" y="20" width="9" height="9" rx="1" fill="#3b82f6"/>
+          <rect x="20" y="20" width="9" height="9" rx="1" fill="#22c55e"/>
+          <!-- gap -->
+          <rect x="35" y="0" width="9" height="9" rx="1" fill="#f97316"/>
+          <rect x="45" y="0" width="9" height="9" rx="1" fill="#22c55e"/>
+          <rect x="55" y="0" width="9" height="9" rx="1" fill="#22c55e"/>
+          <rect x="35" y="10" width="9" height="9" rx="1" fill="#22c55e"/>
+          <rect x="45" y="10" width="9" height="9" rx="1" fill="#22c55e"/>
+          <rect x="55" y="10" width="9" height="9" rx="1" fill="#22c55e"/>
+          <rect x="35" y="20" width="9" height="9" rx="1" fill="#f97316"/>
+          <rect x="45" y="20" width="9" height="9" rx="1" fill="#ef4444"/>
+          <rect x="55" y="20" width="9" height="9" rx="1" fill="#f5c518"/>
+          <!-- arrow -->
+          <text x="72" y="18" fill="#7c6cfa" font-size="14" font-family="monospace">→</text>
+          <!-- solved -->
+          <rect x="88" y="0"  width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="98" y="0"  width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="108" y="0" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="88" y="10" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="98" y="10" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="108" y="10" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="88" y="20" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="98" y="20" width="9" height="9" rx="1" fill="#f5c518"/>
+          <rect x="108" y="20" width="9" height="9" rx="1" fill="#f5c518"/>
+        </svg>
+      </div>
+      <h3 class="project-title">3×3 Rubik's Cube Simulator + Solver</h3>
+      <p class="project-desc">
+        Full 3×3×3 cube engine in pure Python. Implements every standard
+        move (U/L/F/R/B/D), middle slices, wide moves, and full cube
+        rotations. Color-renders to terminal via ANSI codes.
+        The solver works through the standard layer-by-layer method —
+        cross, F2L corners + edges, OLL, PLL — all in code, no lookup tables.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge">Python</span>
+        <span class="tech-badge">ANSI Terminal</span>
+        <span class="tech-badge">Combinatorics</span>
+        <span class="tech-badge">Group Theory</span>
+      </div>
+      <div class="project-highlight">
+        ↳ Also replicated in Minecraft Bedrock command blocks
+      </div>
+    </div>
+
+    <!-- Project 2: 5x5 Cube -->
+    <div class="project-card fade-in">
+      <div class="project-num">// PROJECT_02</div>
+      <div class="project-icon">
+        <svg width="120" height="34" viewBox="0 0 120 34">
+          <!-- 5x5 scrambled -->
+          <rect x="0"  y="0" width="6" height="6" rx="0.8" fill="#f5c518"/>
+          <rect x="7"  y="0" width="6" height="6" rx="0.8" fill="#f97316"/>
+          <rect x="14" y="0" width="6" height="6" rx="0.8" fill="#f5c518"/>
+          <rect x="21" y="0" width="6" height="6" rx="0.8" fill="#22c55e"/>
+          <rect x="28" y="0" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="0"  y="7" width="6" height="6" rx="0.8" fill="#ef4444"/>
+          <rect x="7"  y="7" width="6" height="6" rx="0.8" fill="#f5c518"/>
+          <rect x="14" y="7" width="6" height="6" rx="0.8" fill="#22c55e"/>
+          <rect x="21" y="7" width="6" height="6" rx="0.8" fill="#f5c518"/>
+          <rect x="28" y="7" width="6" height="6" rx="0.8" fill="#f97316"/>
+          <rect x="0"  y="14" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="7"  y="14" width="6" height="6" rx="0.8" fill="#22c55e"/>
+          <rect x="14" y="14" width="6" height="6" rx="0.8" fill="#f5c518"/>
+          <rect x="21" y="14" width="6" height="6" rx="0.8" fill="#ef4444"/>
+          <rect x="28" y="14" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="0"  y="21" width="6" height="6" rx="0.8" fill="#f5c518"/>
+          <rect x="7"  y="21" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="14" y="21" width="6" height="6" rx="0.8" fill="#f97316"/>
+          <rect x="21" y="21" width="6" height="6" rx="0.8" fill="#22c55e"/>
+          <rect x="28" y="21" width="6" height="6" rx="0.8" fill="#f5c518"/>
+          <rect x="0"  y="28" width="6" height="6" rx="0.8" fill="#22c55e"/>
+          <rect x="7"  y="28" width="6" height="6" rx="0.8" fill="#ef4444"/>
+          <rect x="14" y="28" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="21" y="28" width="6" height="6" rx="0.8" fill="#f97316"/>
+          <rect x="28" y="28" width="6" height="6" rx="0.8" fill="#f5c518"/>
+          <text x="42" y="19" fill="#7c6cfa" font-size="14" font-family="monospace">→</text>
+          <!-- solved 5x5 (blue) -->
+          <rect x="58" y="0" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="65" y="0" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="72" y="0" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="79" y="0" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="86" y="0" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="58" y="7" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="65" y="7" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="72" y="7" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="79" y="7" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="86" y="7" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="58" y="14" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="65" y="14" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="72" y="14" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="79" y="14" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="86" y="14" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="58" y="21" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="65" y="21" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="72" y="21" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="79" y="21" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="86" y="21" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="58" y="28" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="65" y="28" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="72" y="28" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="79" y="28" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+          <rect x="86" y="28" width="6" height="6" rx="0.8" fill="#3b82f6"/>
+        </svg>
+      </div>
+      <h3 class="project-title">5×5 Rubik's Cube Simulator + Solver</h3>
+      <p class="project-desc">
+        Extends the 3×3 engine to a full 5×5×5 cube with 3 middle layers
+        per axis. Supports 150+ named moves including inner slices (mr1–mr3,
+        mf, mu), wide moves (Wup, WU, etc.), and full-cube rotations (w5u, w5r).
+        Solver reduces 5×5 to 3×3 via center and edge pairing, then applies
+        the 3×3 layer-by-layer method.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge">Python</span>
+        <span class="tech-badge">150+ Move Types</span>
+        <span class="tech-badge">Reduction Method</span>
+        <span class="tech-badge">ANSI Render</span>
+      </div>
+      <div class="project-highlight">
+        ↳ Also replicated in Minecraft Bedrock command blocks
+      </div>
+    </div>
+
+    <!-- Project 3: Nonogram -->
+    <div class="project-card fade-in">
+      <div class="project-num">// PROJECT_03</div>
+      <div class="project-icon">
+        <svg width="120" height="34" viewBox="0 0 120 34">
+          <!-- nonogram grid -->
+          <rect x="0"  y="0"  width="7" height="7" rx="1" fill="#1a1a24" stroke="#2a2a3a" stroke-width="0.5"/>
+          <rect x="9"  y="0"  width="7" height="7" rx="1" fill="#6cfabc"/>
+          <rect x="18" y="0"  width="7" height="7" rx="1" fill="#6cfabc"/>
+          <rect x="27" y="0"  width="7" height="7" rx="1" fill="#1a1a24" stroke="#2a2a3a" stroke-width="0.5"/>
+          <rect x="0"  y="9"  width="7" height="7" rx="1" fill="#6cfabc"/>
+          <rect x="9"  y="9"  width="7" height="7" rx="1" fill="#6cfabc"/>
+          <rect x="18" y="9"  width="7" height="7" rx="1" fill="#1a1a24" stroke="#2a2a3a" stroke-width="0.5"/>
+          <rect x="27" y="9"  width="7" height="7" rx="1" fill="#6cfabc"/>
+          <rect x="0"  y="18" width="7" height="7" rx="1" fill="#1a1a24" stroke="#2a2a3a" stroke-width="0.5"/>
+          <rect x="9"  y="18" width="7" height="7" rx="1" fill="#6cfabc"/>
+          <rect x="18" y="18" width="7" height="7" rx="1" fill="#6cfabc"/>
+          <rect x="27" y="18" width="7" height="7" rx="1" fill="#6cfabc"/>
+          <rect x="0"  y="27" width="7" height="7" rx="1" fill="#6cfabc"/>
+          <rect x="9"  y="27" width="7" height="7" rx="1" fill="#1a1a24" stroke="#2a2a3a" stroke-width="0.5"/>
+          <rect x="18" y="27" width="7" height="7" rx="1" fill="#1a1a24" stroke="#2a2a3a" stroke-width="0.5"/>
+          <rect x="27" y="27" width="7" height="7" rx="1" fill="#6cfabc"/>
+          <!-- clues label -->
+          <text x="42" y="10" fill="#888899" font-size="7" font-family="monospace">2</text>
+          <text x="42" y="19" fill="#888899" font-size="7" font-family="monospace">1,1</text>
+          <text x="42" y="28" fill="#888899" font-size="7" font-family="monospace">3</text>
+          <!-- AI badge -->
+          <rect x="60" y="4" width="28" height="12" rx="2" fill="rgba(124,108,250,0.2)" stroke="#7c6cfa" stroke-width="0.5"/>
+          <text x="74" y="13" fill="#7c6cfa" font-size="7" font-family="monospace" text-anchor="middle">AI solve</text>
+          <rect x="90" y="4" width="28" height="12" rx="2" fill="rgba(108,250,188,0.15)" stroke="#6cfabc" stroke-width="0.5"/>
+          <text x="104" y="13" fill="#6cfabc" font-size="7" font-family="monospace" text-anchor="middle">my algo</text>
+        </svg>
+      </div>
+      <h3 class="project-title">Nonogram Puzzle Solver</h3>
+      <p class="project-desc">
+        Scalable nonogram (Picross) solver for N×N grids. Two solving
+        engines: a hand-coded constraint-propagation algorithm and an
+        AI-assisted variant. Parses row/column clues, generates all valid
+        placement combinations per line, then iteratively intersects them
+        to lock cells — identical to expert human solving strategy.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge">Python</span>
+        <span class="tech-badge">Constraint Propagation</span>
+        <span class="tech-badge">Combinatorics</span>
+        <span class="tech-badge">ANSI Colors</span>
+      </div>
+      <div class="project-highlight">
+        ↳ Also replicated in Minecraft Bedrock command blocks
+      </div>
+    </div>
+
+    <!-- Project 4: 4-bit lock -->
+    <div class="project-card fade-in">
+      <div class="project-num">// PROJECT_04</div>
+      <div class="project-icon">
+        <svg width="120" height="34" viewBox="0 0 120 34">
+          <!-- gates schematic style -->
+          <!-- 4 input bits -->
+          <circle cx="6" cy="7"  r="3" fill="#6cfabc" opacity="0.9"/>
+          <circle cx="6" cy="14" r="3" fill="#6cfabc" opacity="0.9"/>
+          <circle cx="6" cy="21" r="3" fill="#1a1a24" stroke="#6cfabc" stroke-width="1"/>
+          <circle cx="6" cy="28" r="3" fill="#6cfabc" opacity="0.9"/>
+          <!-- wires -->
+          <line x1="9" y1="7"  x2="28" y2="10" stroke="#2a2a3a" stroke-width="1"/>
+          <line x1="9" y1="14" x2="28" y2="14" stroke="#2a2a3a" stroke-width="1"/>
+          <line x1="9" y1="21" x2="28" y2="18" stroke="#2a2a3a" stroke-width="1"/>
+          <line x1="9" y1="28" x2="28" y2="24" stroke="#2a2a3a" stroke-width="1"/>
+          <!-- AND gate -->
+          <rect x="28" y="8" width="18" height="18" rx="2" fill="#1a1a24" stroke="#7c6cfa" stroke-width="1"/>
+          <text x="37" y="19" fill="#7c6cfa" font-size="6" font-family="monospace" text-anchor="middle">AND</text>
+          <line x1="46" y1="17" x2="58" y2="17" stroke="#2a2a3a" stroke-width="1"/>
+          <!-- NOT gate -->
+          <rect x="58" y="10" width="16" height="14" rx="2" fill="#1a1a24" stroke="#fa6c9a" stroke-width="1"/>
+          <text x="66" y="19" fill="#fa6c9a" font-size="6" font-family="monospace" text-anchor="middle">NOT</text>
+          <line x1="74" y1="17" x2="82" y2="17" stroke="#2a2a3a" stroke-width="1"/>
+          <!-- LED output -->
+          <circle cx="90" cy="17" r="8" fill="rgba(108,250,188,0.15)" stroke="#6cfabc" stroke-width="1"/>
+          <circle cx="90" cy="17" r="4" fill="#6cfabc"/>
+          <text x="105" y="22" fill="#6cfabc" font-size="7" font-family="monospace">OPEN</text>
+        </svg>
+      </div>
+      <h3 class="project-title">4-Bit Combinational Locking Circuit</h3>
+      <p class="project-desc">
+        Designed and wired a 4-bit combinational lock on a physical
+        breadboard using logic gates (AND, OR, NOT, NAND). The circuit
+        accepts a 4-bit binary input and activates an LED output only
+        for the correct key combination — implementing a custom Boolean
+        expression derived from a Karnaugh map minimization.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge">Digital Logic</span>
+        <span class="tech-badge">Breadboard</span>
+        <span class="tech-badge">K-Map</span>
+        <span class="tech-badge">Logic Gates</span>
+      </div>
+      <div class="project-highlight">
+        ↳ Hardware-verified, gate-level implementation
+      </div>
+    </div>
+
+    <!-- Project 5: Minecraft Command Blocks -->
+    <div class="project-card fade-in" style="grid-column: span 1;">
+      <div class="project-num">// PROJECT_05</div>
+      <div class="project-icon">
+        <svg width="120" height="34" viewBox="0 0 120 34">
+          <!-- pixel grass block -->
+          <rect x="0"  y="0"  width="8" height="8" rx="0" fill="#3d8c40"/>
+          <rect x="8"  y="0"  width="8" height="8" rx="0" fill="#4a9e4a"/>
+          <rect x="16" y="0"  width="8" height="8" rx="0" fill="#3d8c40"/>
+          <rect x="0"  y="8"  width="8" height="8" rx="0" fill="#8B5E3C"/>
+          <rect x="8"  y="8"  width="8" height="8" rx="0" fill="#7a5230"/>
+          <rect x="16" y="8"  width="8" height="8" rx="0" fill="#8B5E3C"/>
+          <rect x="0"  y="16" width="8" height="8" rx="0" fill="#7a5230"/>
+          <rect x="8"  y="16" width="8" height="8" rx="0" fill="#8B5E3C"/>
+          <rect x="16" y="16" width="8" height="8" rx="0" fill="#7a5230"/>
+          <!-- command block (purple pixel) -->
+          <rect x="32" y="4"  width="8" height="8" rx="0" fill="#7c3f8c"/>
+          <rect x="40" y="4"  width="8" height="8" rx="0" fill="#9b4fb5"/>
+          <rect x="32" y="12" width="8" height="8" rx="0" fill="#9b4fb5"/>
+          <rect x="40" y="12" width="8" height="8" rx="0" fill="#7c3f8c"/>
+          <!-- arrow -->
+          <text x="56" y="17" fill="#7c6cfa" font-size="11" font-family="monospace">→</text>
+          <!-- code terminal -->
+          <rect x="70" y="2" width="50" height="28" rx="2" fill="#0d0d14" stroke="#2a2a3a" stroke-width="0.5"/>
+          <text x="73" y="12" fill="#6cfabc" font-size="6" font-family="monospace">/execute</text>
+          <text x="73" y="20" fill="#fa6c9a" font-size="6" font-family="monospace">/scoreboard</text>
+          <text x="73" y="28" fill="#888899" font-size="6" font-family="monospace">/fill ...</text>
+        </svg>
+      </div>
+      <h3 class="project-title">Minecraft Bedrock Command Block Systems</h3>
+      <p class="project-desc">
+        All three software projects — the 3×3 solver, 5×5 solver, and
+        nonogram engine — are recreated inside Minecraft Bedrock Edition
+        using only command blocks, scoreboards, and execute chains. No
+        mods, no scripts; purely the in-game command language. This
+        means encoding cube state in scoreboards, driving move logic
+        through conditional command chains, and rendering the board
+        with wool/concrete block placement.
+      </p>
+      <div class="project-tech">
+        <span class="tech-badge">Minecraft Bedrock</span>
+        <span class="tech-badge">Command Blocks</span>
+        <span class="tech-badge">/scoreboard</span>
+        <span class="tech-badge">/execute</span>
+        <span class="tech-badge">/fill</span>
+      </div>
+      <div class="project-highlight">
+        ↳ Constraint-driven environment — deepens algorithmic thinking
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="section-label fade-in">03 — Skills & Development Timeline</p>
+  <h2 class="section-title fade-in">Technical<br><span style="color:var(--accent3)">Competencies</span></h2>
+
+  <div class="skills-layout">
+    <div class="fade-in">
+      <div class="skill-group">
+        <div class="skill-group-label">Languages & Tools</div>
+        <div class="skill-item">
+          <span class="skill-name">Python</span>
+          <div class="skill-bar" data-w="0.92"><div class="skill-fill" style="width:92%"></div></div>
+          <span class="skill-pct">92%</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">MC Cmd Blocks</span>
+          <div class="skill-bar" data-w="0.85"><div class="skill-fill accent2" style="width:85%"></div></div>
+          <span class="skill-pct">85%</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Digital Logic</span>
+          <div class="skill-bar" data-w="0.78"><div class="skill-fill accent3" style="width:78%"></div></div>
+          <span class="skill-pct">78%</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">Core Concepts</div>
+        <div class="skill-item">
+          <span class="skill-name">Algorithms</span>
+          <div class="skill-bar" data-w="0.88"><div class="skill-fill" style="width:88%"></div></div>
+          <span class="skill-pct">88%</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Combinatorics</span>
+          <div class="skill-bar" data-w="0.80"><div class="skill-fill accent2" style="width:80%"></div></div>
+          <span class="skill-pct">80%</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Constraint Solving</span>
+          <div class="skill-bar" data-w="0.82"><div class="skill-fill accent3" style="width:82%"></div></div>
+          <span class="skill-pct">82%</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">Speedcubing</div>
+        <div class="skill-item">
+          <span class="skill-name">3×3 CFOP</span>
+          <div class="skill-bar" data-w="0.95"><div class="skill-fill" style="width:95%"></div></div>
+          <span class="skill-pct">95%</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">5×5 Reduction</span>
+          <div class="skill-bar" data-w="0.85"><div class="skill-fill accent2" style="width:85%"></div></div>
+          <span class="skill-pct">85%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fade-in">
+      <div class="skill-group-label" style="margin-bottom:2rem">Development Timeline</div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-year">SPEEDCUBING</div>
+          <div class="timeline-title">Fell in love with the Rubik's Cube</div>
+          <div class="timeline-body">
+            Started speedcubing, learned CFOP, studied the group-theory
+            math behind cube moves. Realized solving it in code was the
+            next logical step.
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">3×3 PYTHON SOLVER</div>
+          <div class="timeline-title">Built the 3×3 cube engine from scratch</div>
+          <div class="timeline-body">
+            Modeled cube state as a 3D Python array. Implemented all
+            standard moves, middle slices, wide moves, and full-cube
+            rotations. Added ANSI color rendering and a layer-by-layer
+            auto-solver.
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">5×5 EXTENSION</div>
+          <div class="timeline-title">Scaled the engine to 5×5×5</div>
+          <div class="timeline-body">
+            Extended the move system to handle three inner layers per axis
+            (150+ move names). Implemented the reduction method — pairing
+            centers and edges to reduce to a 3×3 solve.
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">NONOGRAM SOLVER</div>
+          <div class="timeline-title">Constraint-propagation puzzle engine</div>
+          <div class="timeline-body">
+            Built a scalable nonogram solver with two engines: hand-crafted
+            constraint propagation and an AI-assisted variant. Supports
+            variable grid sizes.
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">HARDWARE</div>
+          <div class="timeline-title">4-bit combinational lock on breadboard</div>
+          <div class="timeline-body">
+            Designed the Boolean expression with K-map minimization, then
+            wired AND/OR/NOT gates on a physical breadboard to implement
+            a 4-bit combination lock — LED activates only on correct key.
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">MINECRAFT</div>
+          <div class="timeline-title">Recreated every project in Bedrock command blocks</div>
+          <div class="timeline-body">
+            Encoded cube/nonogram state in scoreboards, drove logic
+            through conditional command chains, rendered boards via
+            block placement — no mods, pure in-game commands.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<style>
+  .contact-grid {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    text-align: left;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .ccard {
+    border: 1px solid var(--border);
+    padding: 1.4rem 1.6rem;
+    position: relative;
+    cursor: none;
+    transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+    text-decoration: none;
+    display: block;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .ccard::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(124,108,250,0.07) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .ccard:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(124,108,250,0.12);
+  }
+  .ccard:hover::before { opacity: 1; }
+  .ccard.green:hover  { border-color: var(--accent3); box-shadow: 0 8px 32px rgba(108,250,188,0.10); }
+  .ccard.green::before { background: linear-gradient(135deg, rgba(108,250,188,0.07) 0%, transparent 70%); }
+  .ccard.pink:hover   { border-color: var(--accent2); box-shadow: 0 8px 32px rgba(250,108,154,0.10); }
+  .ccard.pink::before { background: linear-gradient(135deg, rgba(250,108,154,0.07) 0%, transparent 70%); }
+
+  .ccard-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.9rem;
+  }
+  .ccard-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--accent);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .ccard.green .ccard-label { color: var(--accent3); }
+  .ccard.pink  .ccard-label { color: var(--accent2); }
+
+  .ccard-icon {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.25s, background 0.25s;
+    flex-shrink: 0;
+  }
+  .ccard:hover .ccard-icon { border-color: var(--accent); background: rgba(124,108,250,0.1); }
+  .ccard.green:hover .ccard-icon { border-color: var(--accent3); background: rgba(108,250,188,0.1); }
+  .ccard.pink:hover  .ccard-icon { border-color: var(--accent2); background: rgba(250,108,154,0.1); }
+  .ccard-icon svg { width: 13px; height: 13px; }
+
+  .ccard-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.73rem;
+    color: var(--text);
+    word-break: break-all;
+    line-height: 1.5;
+    transition: color 0.2s;
+  }
+  .ccard:hover .ccard-value { color: #fff; }
+
+  .ccard-action {
+    margin-top: 0.9rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    display: flex; align-items: center; gap: 0.4rem;
+    transition: color 0.2s;
+  }
+  .ccard:hover .ccard-action { color: var(--accent); }
+  .ccard.green:hover .ccard-action { color: var(--accent3); }
+  .ccard.pink:hover  .ccard-action { color: var(--accent2); }
+  .ccard-action::before { content: '↗'; font-size: 0.65rem; }
+
+  /* PRN copy card */
+  .ccard.copy-card { cursor: none; }
+  .copy-badge {
+    position: absolute; top: 0.8rem; right: 0.8rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--accent3);
+    color: var(--accent3);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    letter-spacing: 0.1em;
+  }
+  .copy-badge.show { opacity: 1; }
+
+  /* Maps card spans full width */
+  .ccard.full { grid-column: span 2; }
+  .ccard.full .ccard-value { font-size: 0.7rem; }
+
+  @media (max-width: 600px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .ccard.full { grid-column: span 1; }
+  }
+</style>
+
+<section id="contact">
+  <div class="contact-inner fade-in">
+    <p class="section-label" style="justify-content:center">04 — Contact Information</p>
+    <h2 class="contact-big">
+      Get in<br><span class="glow">touch</span>
+    </h2>
+    <p style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted);line-height:2;margin-top:1.5rem">
+      Available for academic collaborations, internships, and project discussions.
+    </p>
+
+    <div class="contact-grid">
+
+      <!-- Personal Email -->
+      <a href="mailto:ashfaqshikalkar5@gmail.com" class="ccard">
+        <div class="ccard-top">
+          <span class="ccard-label">Personal Email</span>
+          <span class="ccard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+              <rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/>
+            </svg>
+          </span>
+        </div>
+        <div class="ccard-value">ashfaqshikalkar5@gmail.com</div>
+        <div class="ccard-action">Click to open mail app</div>
+      </a>
+
+      <!-- College Email -->
+      <a href="mailto:202501120043@mitaoe.ac.in" class="ccard pink">
+        <div class="ccard-top">
+          <span class="ccard-label">College Email</span>
+          <span class="ccard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent2)">
+              <path d="M22 10v6M2 10l10 7 10-7"/><path d="M2 10V6a2 2 0 012-2h16a2 2 0 012 2v4"/>
+            </svg>
+          </span>
+        </div>
+        <div class="ccard-value">202501120043@mitaoe.ac.in</div>
+        <div class="ccard-action" style="color:var(--accent2)">Click to open mail app</div>
+      </a>
+
+      <!-- Phone -->
+      <a href="tel:+919370103575" class="ccard green">
+        <div class="ccard-top">
+          <span class="ccard-label">Phone Number</span>
+          <span class="ccard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent3)">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.19 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.29 6.29l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+          </span>
+        </div>
+        <div class="ccard-value">+91 93701 03575</div>
+        <div class="ccard-action" style="color:var(--accent3)">Click to dial call</div>
+      </a>
+
+      <!-- PRN copy -->
+      <div class="ccard copy-card" id="prn-card" onclick="copyPRN()" style="cursor:none;">
+        <span class="copy-badge" id="copy-badge">Copied!</span>
+        <div class="ccard-top">
+          <span class="ccard-label">PRN / Student ID</span>
+          <span class="ccard-icon" id="prn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+            </svg>
+          </span>
+        </div>
+        <div class="ccard-value" id="prn-value">202501120043</div>
+        <div class="ccard-action" id="prn-action">Click to copy PRN</div>
+      </div>
+
+      <!-- LinkedIn -->
+      <a href="https://linkedin.com/in/ashfaqshikalkar" target="_blank" rel="noopener" class="ccard">
+        <div class="ccard-top">
+          <span class="ccard-label">LinkedIn</span>
+          <span class="ccard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+            </svg>
+          </span>
+        </div>
+        <div class="ccard-value">linkedin.com/in/ashfaqshikalkar</div>
+        <div class="ccard-action">Click to view LinkedIn profile</div>
+      </a>
+
+      <!-- GitHub -->
+      <a href="https://github.com/ashfaqshikalkar29-cloud" target="_blank" rel="noopener" class="ccard pink">
+        <div class="ccard-top">
+          <span class="ccard-label">GitHub</span>
+          <span class="ccard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent2)">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
+            </svg>
+          </span>
+        </div>
+        <div class="ccard-value">github.com/ashfaqshikalkar29-cloud</div>
+        <div class="ccard-action" style="color:var(--accent2)">Click to view GitHub profile</div>
+      </a>
+
+      <!-- Institution / Maps -->
+      <a href="https://maps.google.com/?q=MIT+Academy+of+Engineering+Alandi+Pune" target="_blank" rel="noopener" class="ccard full">
+        <div class="ccard-top">
+          <span class="ccard-label">Institution</span>
+          <span class="ccard-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+              <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+          </span>
+        </div>
+        <div class="ccard-value">MIT Academy of Engineering, Alandi (D), Pune — 412 105, Maharashtra, India</div>
+        <div class="ccard-action">Click to open in Google Maps</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<script>
+function copyPRN() {
+  navigator.clipboard.writeText('202501120043').then(() => {
+    const badge = document.getElementById('copy-badge');
+    const action = document.getElementById('prn-action');
+    const val = document.getElementById('prn-value');
+    badge.classList.add('show');
+    action.textContent = '✓ Copied to clipboard';
+    val.style.color = 'var(--accent3)';
+    setTimeout(() => {
+      badge.classList.remove('show');
+      action.textContent = 'Click to copy PRN';
+      val.style.color = '';
+    }, 2000);
+  });
+}
+</script>
+
+<!-- FOOTER -->
+<footer>
+  <span>Ashfaq Shikalkar — PRN: 202501120043 — MIT Academy of Engineering, Pune</span>
+  <span>Academic Portfolio — A.Y. 2025–26</span>
+</footer>
+
+<script>
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+document.querySelectorAll('a, button, .project-card, .stat-card, .btn').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(2.5)';
+    ring.style.transform = 'translate(-50%,-50%) scale(0.5)';
+    ring.style.opacity = '0.3';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+    ring.style.transform = 'translate(-50%,-50%) scale(1)';
+    ring.style.opacity = '1';
+  });
+});
+
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      const bars = entry.target.querySelectorAll('.skill-bar');
+      bars.forEach(b => b.classList.add('animated'));
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.nav-links a, .btn, a[href^="#"]').forEach(a => {
+  const href = a.getAttribute('href');
+  if (href && href.startsWith('#')) {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+});
+
+const tags = document.querySelectorAll('.tag');
+tags.forEach(tag => {
+  tag.addEventListener('click', () => {
+    tags.forEach(t => t.classList.remove('active'));
+    tag.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
